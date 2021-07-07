@@ -1,21 +1,45 @@
 import React from 'react'
 import styled from 'styled-components';
+import {db} from '../firebase';
 
 
-function Product() {
+function Product({title, price ,rating, image, id}) {
+
+    const addToCart = () => {
+        console.log(id)
+        const cartItem =  db.collection("cartItems").doc(id);
+        cartItem.get()
+        .then((doc) => {
+            console.log(doc)
+            if(doc.exists){
+                cartItem.update({
+                    quantity:doc.data().quantity+1
+                })
+            }else{
+                db.collection("cartItems").doc(id).set({
+                    name:title,
+                    image:image,
+                    price:price,
+                    quantity:1
+                })
+            }
+        })
+    }
     return (
         <Container>
             <Title>
-                Ipad Pro
+                {title}
             </Title>
             <Price>
-                $399
+                ${price}
             </Price>
             <Rating>
-
+                {
+                    Array(rating).fill().map( rating => <span>*</span>)
+                }
             </Rating>
-            <Image src="https://m.media-amazon.com/images/I/71gOkVA6-eL._AC_UY218_.jpg" />
-            <AddToCart>
+            <Image src={image} />
+            <AddToCart onClick={addToCart}>
                 Add to Cart
             </AddToCart>
         </Container>
@@ -54,4 +78,5 @@ const AddToCart = styled.button`
     height:30px;
     margin:0 auto;
     margin-top:12px;
+    cursor:pointer;
 `
