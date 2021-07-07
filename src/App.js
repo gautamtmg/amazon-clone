@@ -4,11 +4,13 @@ import Header from './components/Header'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Cart from './pages/Cart'
 import Home from './pages/Home'
-import {db} from './firebase';
+import {db, auth} from './firebase';
+import Login from './pages/Login'
 
 
 
 function App() {
+  const [ user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [cartItems, setCartItems] = useState([]);
 
   const getCartItems = () => {
@@ -26,6 +28,15 @@ function App() {
 
     })
   }
+
+  const signOut = () => {
+    auth.signOut().then(() => {
+      setUser(null)
+      localStorage.removeItem("user")
+    })
+  }
+
+
   useEffect(() =>{
     getCartItems();
   }, [])
@@ -34,18 +45,30 @@ function App() {
 
 
   return (
-    <div className="App">
         <Router>
-        <Header />
+          {
+            !user ? (
+              <Login setUser ={setUser}/>
+            ):(
+              <div>
+              <Header 
+                user={user} 
+                cartItems = { cartItems }
+                signOut={signOut}  
+              />
 
-          <Switch>
-            <Route path="/cart" >
-              <Cart cartItems = {cartItems} />
-            </Route>
-            <Route path="/" component={Home} />
-          </Switch>
+              <Switch>
+                
+                <Route path="/cart" >
+                  <Cart cartItems = {cartItems} />
+                </Route>
+                <Route path="/" component={Home} />
+              </Switch>
+              </div>
+            )
+          }
+
         </Router>
-    </div>
   );
 }
 

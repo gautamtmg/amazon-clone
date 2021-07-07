@@ -3,10 +3,21 @@ import styled from 'styled-components'
 import SearchIcon from '@material-ui/icons/Search';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
-import {Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 
-function Header() {
+function Header({ cartItems, user, signOut }) {
+
+    const getCount = () => {
+        let count = 0
+        // loop through all cartItems.
+        cartItems.forEach((item => {
+            count += item.product.quantity
+        }))
+        return count
+
+    }
+
     return (
         <Container>
             <HeaderLogo>
@@ -18,9 +29,9 @@ function Header() {
 
             <HeaderOptionAddress>
                 <LocationOnIcon />
-                <HeaderOption>
-                <OptionLineOne>Hello,</OptionLineOne>
-                <OptionLineTwo>Selet your address</OptionLineTwo>
+                <HeaderOption >
+                    <OptionLineOne>Hello,</OptionLineOne>
+                    <OptionLineTwo>Selet your address</OptionLineTwo>
                 </HeaderOption>
             </HeaderOptionAddress>
 
@@ -33,8 +44,8 @@ function Header() {
             </HeaderSearch>
 
             <HeaderNavItems>
-                <HeaderOption>
-                    <OptionLineOne>Hello, Gautam</OptionLineOne>
+                <HeaderOption onClick={signOut}>
+                    <OptionLineOne>Hello, {user.name}</OptionLineOne>
                     <OptionLineTwo> Account & Lists</OptionLineTwo>
                 </HeaderOption>
 
@@ -47,7 +58,7 @@ function Header() {
             <HeaderOptionCart>
                 <Link to="/cart">
                     <ShoppingBasketIcon />
-                    <CartCount>4</CartCount>
+                    <CartCount>{getCount()}</CartCount>
                 </Link>
 
             </HeaderOptionCart>
@@ -125,6 +136,7 @@ const HeaderSearchIconContainer = styled.div`
 `
 const HeaderNavItems = styled.div`
     display:flex;
+    cursor:pointer;
 `
 
 const HeaderOption = styled.div`

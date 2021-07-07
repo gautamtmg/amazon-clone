@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import {db} from '../firebase'
 
 
 function CartItem({item,id}) {
@@ -8,6 +9,20 @@ function CartItem({item,id}) {
     for(let i =1;i<Math.max(item.quantity+1, 20); i++){
         options.push(<option value={i}> Qty: {i}</option>)
     }
+
+    const changeQuantity = (newQuantity)=>{
+        db.collection('cartItems').doc(id).update({
+            quantity:parseInt(newQuantity)
+        })
+    }
+
+    const deleteItem = (e => {
+        e.preventDefault()
+        db.collection('cartItems').doc(id).delete();
+    }) 
+
+  
+
     return (
         <Container>
             <ImageContainer>
@@ -23,12 +38,12 @@ function CartItem({item,id}) {
 
                 <CartItemBottom>
                     <CartItemQuantity>
-                        <select name="" id="" value={item.quantity}>
+                        <select onChange={(e) => changeQuantity(e.target.value)} value={item.quantity}>
                             {options}
                         </select>
                     </CartItemQuantity>
 
-                    <CartItemDelete>
+                    <CartItemDelete onClick = {deleteItem}>
                         Delete
                     </CartItemDelete>
                 </CartItemBottom>
